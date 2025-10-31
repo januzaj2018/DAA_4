@@ -24,6 +24,9 @@ public class Main {
         List<List<Integer>> comps = scc.getComponents();
         ObjectMapper om = new ObjectMapper();
         String out = om.writeValueAsString(comps);
+        // Output metrics
+        String metricsJson = om.writerWithDefaultPrettyPrinter().writeValueAsString(metrics);
+        System.out.println(metricsJson);
         System.out.println(out);
     }
 }

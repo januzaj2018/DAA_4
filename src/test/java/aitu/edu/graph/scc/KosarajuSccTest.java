@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,8 +23,6 @@ public class KosarajuSccTest {
         Graph g = gb.build();
         assertEquals(3, g.nodeCount());
 
-        // adjacency
-        List<List<Integer>> adj = g.adjacency();
         // Check neighbors explicitly (avoid brittle internal adj-list sizing)
         assertEquals(Collections.singletonList(1), g.neighbors(0));
         assertEquals(Collections.singletonList(2), g.neighbors(1));
@@ -86,7 +83,8 @@ public class KosarajuSccTest {
         // there should be two condensation edges corresponding to the two original cross-component edges
         assertEquals(2, condEdges.size());
         for (String ed : condEdges) {
-            assertFalse(ed.split("->")[0].equals(ed.split("->")[1]));
+            String[] parts = ed.split("->");
+            assertNotEquals(parts[0], parts[1]);
         }
     }
 

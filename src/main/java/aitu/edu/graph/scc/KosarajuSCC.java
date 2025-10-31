@@ -9,12 +9,6 @@ import java.util.List;
 
 public class KosarajuSCC {
 
-    /**
-     * Compute strongly connected components using Kosaraju's algorithm.
-     * @param n number of vertices (vertices are 0..n-1)
-     * @param edges list of directed edges where each edge is int[2] = {from, to}
-     * @return SCCResult containing component ids and list of components
-     */
     public static SCCResult computeSCC(int n, List<int[]> edges) {
         return computeSCC(n, edges, null);
     }
@@ -57,9 +51,7 @@ public class KosarajuSCC {
         return new SCCResult(compIds, components);
     }
 
-    /**
-     * Compute SCC directly from a Graph object. Metrics is optional.
-     */
+
     public static SCCResult computeSCC(Graph g) {
         return computeSCC(g, null);
     }
