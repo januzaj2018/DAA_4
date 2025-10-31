@@ -2,11 +2,7 @@ package aitu.edu.graph.util;
 
 import java.util.*;
 
-/**
- * Immutable directed graph represented by adjacency lists.
- * Nodes are integers 0..n-1.
- * Optionally supports node durations (Map from node -> duration in arbitrary units).
- */
+
 public final class Graph {
     private final int n;
     private final List<List<Integer>> adj;

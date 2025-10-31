@@ -7,16 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Fluent builder that reads tasks.json with format:
- * { "nodes": [0,1,...], "edges": [[from,to],...], "durations": {"0":5, "1":3, ...} }
- *
- * It also supports edges as objects: {"u":0, "v":1, "w":3} and a top-level
- * "weight_model" which may be "edge" (default) or "node". When weight_model=="node",
- * GraphBuilder will prefer a top-level "durations" object; if absent, it will infer
- * node durations from edge weights (takes max outgoing w per node) when edge objects
- * include a "w" field.
- */
+
 public class GraphBuilder {
     private int n = -1;
     private final List<List<Integer>> adj = new ArrayList<>();

@@ -1,8 +1,6 @@
 package aitu.edu.graph.util;
 
-/**
- * Simple implementation of Metrics using System.nanoTime().
- */
+
 public class TimerMetrics implements Metrics {
     private long dfsVisits = 0;
     private long dfsEdges = 0;
