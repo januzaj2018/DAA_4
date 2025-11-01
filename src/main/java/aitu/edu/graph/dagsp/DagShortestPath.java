@@ -32,6 +32,9 @@ public class DagShortestPath {
             if (dist[u] == PathResult.INF) continue; // unreachable
             List<Integer> nbrs = g.neighbors(u);
             for (int v : nbrs) {
+                // increment relaxation metric for every processed edge (safe null-check)
+                if (metrics != null) metrics.incRelaxation();
+
                 long vdur = g.durationOf(v).orElse(0L);
                 long cand = dist[u] + vdur;
                 if (cand < dist[v]) {
