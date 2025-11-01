@@ -26,6 +26,9 @@ import java.util.*;
 public class TasksReportGenerator {
 
     public static void generateReport(String inputPath, String outputPath) throws IOException {
+        // Warm up the JVM with a dummy computation
+        warmupJVM();
+
         ObjectMapper om = new ObjectMapper();
         JsonNode root = om.readTree(new File(inputPath));
 
@@ -59,6 +62,28 @@ public class TasksReportGenerator {
         System.out.println("[report] written output to " + outputPath);
     }
 
+    private static void warmupJVM() {
+        System.out.println("[report] warming up JVM...");
+        // Create a small dummy graph
+        GraphBuilder gb = new GraphBuilder();
+        gb.addEdge(0, 1);
+        gb.addEdge(1, 2);
+        gb.addEdge(0, 2);
+        gb.setDuration(0, 1);
+        gb.setDuration(1, 2);
+        gb.setDuration(2, 3);
+        Graph dummyGraph = gb.build();
+
+        // Run dummy computations
+        TimerMetrics metrics = new TimerMetrics();
+        SCCResult scc = KosarajuSCC.computeSCC(dummyGraph, metrics);
+        List<Integer> topo = DFSTopologicalSort.topologicalOrder(dummyGraph.adjacency(), metrics);
+        PathResult sp = DagShortestPath.shortestPath(dummyGraph, 0, metrics);
+        PathResult lp = CriticalPathExtractor.criticalPath(dummyGraph, metrics);
+
+        System.out.println("[report] JVM warmup complete.");
+    }
+
     private static ObjectNode processGraph(JsonNode gnode, ObjectMapper om) {
         ObjectNode out = om.createObjectNode();
 
@@ -81,7 +106,7 @@ public class TasksReportGenerator {
         out.set("input_stats", input);
 
         long totalOps = 0;
-        double totalMs = 0.0;
+        long totalNs = 0;
 
         // --- Kosaraju SCC ---
         System.out.println("[report] computing SCC for graph id=" + graphId);
@@ -90,8 +115,8 @@ public class TasksReportGenerator {
         SCCResult scc = KosarajuSCC.computeSCC(g, sccMetrics);
         long sccEnd = System.nanoTime();
         long sccOps = sccMetrics.getDfsVisits() + sccMetrics.getDfsEdges() + sccMetrics.getRelaxations();
-        double sccMs = (sccEnd - sccStart) / 1_000_000.0;
-        System.out.println("[report] scc done id=" + graphId + " comps=" + scc.componentCount() + " ops=" + sccOps + " ms=" + sccMs);
+        long sccNs = sccEnd - sccStart;
+        System.out.println("[report] scc done id=" + graphId + " comps=" + scc.componentCount() + " ops=" + sccOps + " ns=" + sccNs);
 
         ObjectNode sccNode = om.createObjectNode();
         sccNode.put("num_sccs", scc.componentCount());
@@ -103,11 +128,11 @@ public class TasksReportGenerator {
         }
         sccNode.set("sccs", comps);
         sccNode.put("operations_count", sccOps);
-        sccNode.put("execution_time_ms", sccMs);
+        sccNode.put("execution_time_ns", sccNs);
         out.set("kosaraju_scc", sccNode);
 
         totalOps += sccOps;
-        totalMs += sccMs;
+        totalNs += sccNs;
 
         // condensation_graph (use TaskOrderDeriver to build condensation adjacency)
         System.out.println("[report] building condensation for graph id=" + graphId);
@@ -128,19 +153,19 @@ public class TasksReportGenerator {
         List<Integer> topoOrder = DFSTopologicalSort.topologicalOrder(g.adjacency(), topoMetrics);
         long topoEnd = System.nanoTime();
         long topoOps = topoMetrics.getDfsVisits() + topoMetrics.getDfsEdges() + topoMetrics.getRelaxations();
-        double topoMs = (topoEnd - topoStart) / 1_000_000.0;
-        System.out.println("[report] topo done id=" + graphId + " orderLen=" + topoOrder.size() + " ops=" + topoOps + " ms=" + topoMs);
+        long topoNs = topoEnd - topoStart;
+        System.out.println("[report] topo done id=" + graphId + " orderLen=" + topoOrder.size() + " ops=" + topoOps + " ns=" + topoNs);
 
         ObjectNode topoNode = om.createObjectNode();
         ArrayNode topoArr = om.createArrayNode();
         for (int v : topoOrder) topoArr.add(v);
         topoNode.set("topological_order", topoArr);
         topoNode.put("operations_count", topoOps);
-        topoNode.put("execution_time_ms", topoMs);
+        topoNode.put("execution_time_ns", topoNs);
         out.set("topological_sort", topoNode);
 
         totalOps += topoOps;
-        totalMs += topoMs;
+        totalNs += topoNs;
 
         // shortest paths (from source)
         int source = gnode.has("source") ? gnode.get("source").asInt(-1) : -1;
@@ -154,8 +179,8 @@ public class TasksReportGenerator {
         }
         long spEnd = System.nanoTime();
         long spOps = spMetrics.getDfsVisits() + spMetrics.getDfsEdges() + spMetrics.getRelaxations();
-        double spMs = (spEnd - spStart) / 1_000_000.0;
-        System.out.println("[report] shortest paths done id=" + graphId + " ops=" + spOps + " ms=" + spMs);
+        long spNs = spEnd - spStart;
+        System.out.println("[report] shortest paths done id=" + graphId + " ops=" + spOps + " ns=" + spNs);
 
         ObjectNode spNode = om.createObjectNode();
         spNode.put("source", source);
@@ -183,11 +208,11 @@ public class TasksReportGenerator {
         }
         spNode.set("paths", pathsNode);
         spNode.put("operations_count", spOps);
-        spNode.put("execution_time_ms", spMs);
+        spNode.put("execution_time_ns", spNs);
         out.set("shortest_path", spNode);
 
         totalOps += spOps;
-        totalMs += spMs;
+        totalNs += spNs;
 
         // longest / critical path
         System.out.println("[report] computing critical (longest) path for graph id=" + graphId + " isDag=" + isDag);
@@ -199,8 +224,8 @@ public class TasksReportGenerator {
         }
         long lpEnd = System.nanoTime();
         long lpOps = lpMetrics.getDfsVisits() + lpMetrics.getDfsEdges() + lpMetrics.getRelaxations();
-        double lpMs = (lpEnd - lpStart) / 1_000_000.0;
-        System.out.println("[report] critical path done id=" + graphId + " ops=" + lpOps + " ms=" + lpMs);
+        long lpNs = lpEnd - lpStart;
+        System.out.println("[report] critical path done id=" + graphId + " ops=" + lpOps + " ns=" + lpNs);
 
         ObjectNode lpNode = om.createObjectNode();
         if (lp != null) {
@@ -232,17 +257,16 @@ public class TasksReportGenerator {
             lpNode.set("node_durations", om.createArrayNode());
         }
         lpNode.put("operations_count", lpOps);
-        lpNode.put("execution_time_ms", lpMs);
+        lpNode.put("execution_time_ns", lpNs);
         out.set("longest_path", lpNode);
 
         totalOps += lpOps;
-        totalMs += lpMs;
+        totalNs += lpNs;
 
         out.put("total_operations_count", totalOps);
-        out.put("total_execution_time_ms", totalMs);
+        out.put("total_execution_time_ns", totalNs);
 
-        System.out.println("[report] finished graph id=" + graphId + " totalOps=" + totalOps + " totalMs=" + totalMs);
+        System.out.println("[report] finished graph id=" + graphId + " totalOps=" + totalOps + " totalNs=" + totalNs);
         return out;
     }
 }
-
