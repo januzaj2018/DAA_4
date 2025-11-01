@@ -6,6 +6,8 @@ import aitu.edu.graph.util.Graph;
 import aitu.edu.graph.util.GraphBuilder;
 import aitu.edu.graph.util.TimerMetrics;
 import aitu.edu.graph.util.Metrics;
+import aitu.edu.graph.topo.DFSTopologicalSort;
+import aitu.edu.graph.topo.TaskOrderDeriver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,17 +18,22 @@ public class Main {
         String path = args.length > 0 ? args[0] : "data/tasks.json";
 
         Graph g = GraphBuilder.fromFile(path).build();
-        Metrics metrics = new TimerMetrics();
+        Metrics sccMetrics = new TimerMetrics();
 
-        SCCResult scc = KosarajuSCC.computeSCC(g, metrics);
+        SCCResult scc = KosarajuSCC.computeSCC(g, sccMetrics);
 
-        // Output only the list of SCCs as JSON array of arrays
-        List<List<Integer>> comps = scc.getComponents();
         ObjectMapper om = new ObjectMapper();
-        String out = om.writeValueAsString(comps);
-        // Output metrics
-        String metricsJson = om.writerWithDefaultPrettyPrinter().writeValueAsString(metrics);
-        System.out.println(metricsJson);
-        System.out.println(out);
+
+        // --- Topological sort on condensation ---
+        Metrics topoMetrics = new TimerMetrics();
+        List<List<Integer>> condensation = TaskOrderDeriver.buildCondensation(g, scc);
+        List<Integer> componentOrder = DFSTopologicalSort.topologicalOrder(condensation, topoMetrics);
+        List<Integer> taskOrder = TaskOrderDeriver.deriveTaskOrderFromComponentOrder(componentOrder, scc);
+
+        // Print outputs: component order (order of components in condensation) and derived task order
+        String topoComponentOrderJson = om.writeValueAsString(componentOrder);
+        String topoTaskOrderJson = om.writeValueAsString(taskOrder);
+        System.out.println(topoComponentOrderJson);
+        System.out.println(topoTaskOrderJson);
     }
 }

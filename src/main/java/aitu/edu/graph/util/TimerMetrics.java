@@ -4,6 +4,7 @@ package aitu.edu.graph.util;
 public class TimerMetrics implements Metrics {
     private long dfsVisits = 0;
     private long dfsEdges = 0;
+    private long relaxations = 0;
     private final long startNs;
 
     public TimerMetrics() {
@@ -21,6 +22,11 @@ public class TimerMetrics implements Metrics {
     }
 
     @Override
+    public synchronized void incRelaxation() {
+        relaxations++;
+    }
+
+    @Override
     public synchronized long getDfsVisits() {
         return dfsVisits;
     }
@@ -28,6 +34,11 @@ public class TimerMetrics implements Metrics {
     @Override
     public synchronized long getDfsEdges() {
         return dfsEdges;
+    }
+
+    @Override
+    public synchronized long getRelaxations() {
+        return relaxations;
     }
 
     @Override
