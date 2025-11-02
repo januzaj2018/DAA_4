@@ -35,9 +35,6 @@ public class PathResult {
         return pred;
     }
 
-    /**
-     * Reconstruct path from source to dst. Returns empty list if unreachable.
-     */
     public List<Integer> reconstructPath(int dst) {
         return PathReconstructor.reconstruct(pred, src, dst);
     }

@@ -8,18 +8,13 @@ import java.util.*;
 
 public class CriticalPathExtractor {
 
-    /**
-     * Extract the global critical path (longest-duration path) in the DAG.
-     * Returns a PathResult that can be used to inspect distances and reconstruct the critical path to the sink node.
-     */
-    public static PathResult criticalPath(Graph g, Metrics metrics) {
+     public static PathResult criticalPath(Graph g, Metrics metrics) {
         if (g == null) throw new IllegalArgumentException("graph is null");
         int n = g.nodeCount();
         long[] dist = new long[n];
         Arrays.fill(dist, PathResult.NEG_INF);
         Map<Integer, Integer> pred = new HashMap<>();
 
-        // initialize each node as a potential start with its own duration
         for (int v = 0; v < n; v++) {
             dist[v] = g.durationOf(v).orElse(0L);
         }
@@ -38,7 +33,6 @@ public class CriticalPathExtractor {
             }
         }
 
-        // find global max sink
         long best = PathResult.NEG_INF;
         int sink = -1;
         for (int i = 0; i < n; i++) {
@@ -49,11 +43,9 @@ public class CriticalPathExtractor {
         }
 
         if (sink == -1) {
-            // empty graph
             return new PathResult(0, dist, pred);
         }
 
-        // find the source (start) of the critical path by walking predecessors backwards
         int src = sink;
         while (pred.containsKey(src)) {
             src = pred.get(src);

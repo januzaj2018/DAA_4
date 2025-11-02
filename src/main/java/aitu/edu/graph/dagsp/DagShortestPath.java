@@ -8,11 +8,6 @@ import java.util.*;
 
 public class DagShortestPath {
 
-    /**
-     * Compute single-source shortest paths on a DAG where node weights (durations) are stored in the Graph.
-     * Distance of a path is defined as the sum of node durations along the path, including the source and destination nodes.
-     * If a node has no duration defined, its duration is treated as 0.
-     */
     public static PathResult shortestPath(Graph g, int src, Metrics metrics) {
         if (g == null) throw new IllegalArgumentException("graph is null");
         int n = g.nodeCount();

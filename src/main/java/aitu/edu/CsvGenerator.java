@@ -1,4 +1,3 @@
-// java
 package aitu.edu;
 
 import com.fasterxml.jackson.databind.JsonNode;
