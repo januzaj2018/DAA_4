@@ -321,3 +321,64 @@ Use Kosaraju's for general directed graphs to find SCCs, great for condensing gr
 Use DAG-SP for shortest paths in acyclic graphs; handles negative weights, faster than Bellman-Ford. For longest paths, use the variant for critical paths.
 
 Practical recommendations: For large sparse graphs, adjacency lists are key. Pre-check for cycles if needed for topo/DAG-SP. Node weights work well for task models; convert to edge weights if standard libs expect that. Test on your data – density hurts more in practice due to memory access. If cycles present, condense via SCC then topo for partial orders. If code needed, the provided Java implementations cover these.
+
+## Run & Build
+
+Quick instructions to build, test and run the project on Windows (PowerShell). Maven is used for build and tests. The examples below assume you run them in the repository root (where `pom.xml` is located).
+
+1) Run unit tests
+
+```powershell
+mvn test
+```
+
+2) Build the JAR (produces `target/untitled1-1.0-SNAPSHOT.jar`)
+
+```powershell
+mvn package
+```
+
+3) Run the report generator over all `data/input_*.json` files
+
+This will run `Main` which iterates `data/input_*.json` and writes `data/report_*.json` outputs.
+Use the built classes + dependency jars on the classpath:
+
+```powershell
+java -cp "target/untitled1-1.0-SNAPSHOT.jar;target/dependency/*" aitu.edu.Main
+```
+
+Alternatively, use Maven to run it directly (handles classpath automatically):
+
+```powershell
+mvn exec:java -Dexec.mainClass="aitu.edu.Main"
+```
+
+If you prefer to run a specific generator directly (no Main):
+
+- Generate reports from a single input file using `TasksReportGenerator` (example)
+
+```powershell
+java -cp "target/untitled1-1.0-SNAPSHOT.jar;target/dependency/*" aitu.edu.TasksReportGenerator <input.json> <output.json>
+```
+
+(If you get a "NoClassDefFoundError" for dependencies, ensure you have run `mvn package` and a `target/dependency` directory containing the runtime jars is present. Alternatively run via your IDE which handles the classpath.)
+
+4) Generate CSV summary files from existing `report_*.json` files
+
+After `report_*.json` files are present in `data/`, run the CSV generator:
+
+```powershell
+java -cp "target/untitled1-1.0-SNAPSHOT.jar;target/dependency/*" aitu.edu.CsvGenerator
+```
+
+This writes the following CSV files into `data/`:
+- `scc_results.csv`
+- `topo_results.csv`
+- `shortest_path_results.csv`
+- `longest_path_results.csv`
+- `summary_results.csv`
+
+
+## Why DAG shortest-path operations_count can be 0 and no paths are reported
+
+The DAG shortest-path and longest-path (critical path) computations are executed only when a graph is marked as a DAG in its metadata. The report generator checks `metadata.is_dag` in the input JSON and skips DAG-specific algorithms for non-DAG graphs. When skipped, the operations_count is 0 and no paths are reported. See `TasksReportGenerator.processGraph(...)` for the exact behavior.
