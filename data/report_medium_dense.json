@@ -2,33 +2,33 @@
   "graph_id" : 10,
   "input_stats" : {
     "vertices" : 14,
-    "edges" : 90,
+    "edges" : 94,
     "density" : "dense",
     "variant" : "one_cycle",
-    "source" : 5,
+    "source" : 4,
     "weight_model" : "node"
   },
   "kosaraju_scc" : {
     "num_sccs" : 1,
-    "sccs" : [ [ 0, 1, 6, 5, 4, 3, 2, 8, 9, 10, 12, 11, 7, 13 ] ],
-    "operations_count" : 208,
-    "execution_time_ns" : 41800
+    "sccs" : [ [ 0, 1, 3, 4, 2, 5, 6, 9, 8, 7, 10, 11, 12, 13 ] ],
+    "operations_count" : 216,
+    "execution_time_ns" : 27800
   },
   "condensation_graph" : {
     "vertices" : 1,
     "edges" : 0
   },
   "topological_sort" : {
-    "topological_order" : [ 0, 1, 12, 6, 8, 7, 11, 2, 3, 4, 13, 5, 9, 10 ],
-    "operations_count" : 104,
-    "execution_time_ns" : 17900
+    "topological_order" : [ 0, 9, 12, 7, 1, 4, 3, 5, 10, 6, 11, 13, 8, 2 ],
+    "operations_count" : 108,
+    "execution_time_ns" : 13900
   },
   "shortest_path" : {
-    "source" : 5,
+    "source" : 4,
     "destination" : "all_reachable",
     "paths" : { },
     "operations_count" : 0,
-    "execution_time_ns" : 100
+    "execution_time_ns" : 200
   },
   "longest_path" : {
     "critical_path_length" : 0,
@@ -37,39 +37,39 @@
     "operations_count" : 0,
     "execution_time_ns" : 100
   },
-  "total_operations_count" : 312,
-  "total_execution_time_ns" : 59900
+  "total_operations_count" : 324,
+  "total_execution_time_ns" : 42000
 }, {
   "graph_id" : 11,
   "input_stats" : {
     "vertices" : 16,
-    "edges" : 140,
+    "edges" : 113,
     "density" : "dense",
     "variant" : "two_cycles",
-    "source" : 3,
+    "source" : 6,
     "weight_model" : "node"
   },
   "kosaraju_scc" : {
     "num_sccs" : 1,
-    "sccs" : [ [ 0, 3, 4, 1, 5, 2, 6, 8, 9, 7, 11, 10, 13, 12, 14, 15 ] ],
-    "operations_count" : 312,
-    "execution_time_ns" : 36900
+    "sccs" : [ [ 0, 3, 10, 1, 4, 2, 7, 6, 8, 5, 9, 11, 12, 14, 15, 13 ] ],
+    "operations_count" : 258,
+    "execution_time_ns" : 32400
   },
   "condensation_graph" : {
     "vertices" : 1,
     "edges" : 0
   },
   "topological_sort" : {
-    "topological_order" : [ 0, 10, 6, 9, 12, 14, 3, 15, 5, 1, 4, 11, 7, 2, 13, 8 ],
-    "operations_count" : 156,
-    "execution_time_ns" : 14800
+    "topological_order" : [ 0, 10, 14, 12, 8, 4, 13, 1, 15, 3, 7, 2, 6, 9, 5, 11 ],
+    "operations_count" : 129,
+    "execution_time_ns" : 8800
   },
   "shortest_path" : {
-    "source" : 3,
+    "source" : 6,
     "destination" : "all_reachable",
     "paths" : { },
     "operations_count" : 0,
-    "execution_time_ns" : 100
+    "execution_time_ns" : 200
   },
   "longest_path" : {
     "critical_path_length" : 0,
@@ -78,39 +78,39 @@
     "operations_count" : 0,
     "execution_time_ns" : 100
   },
-  "total_operations_count" : 468,
-  "total_execution_time_ns" : 51900
+  "total_operations_count" : 387,
+  "total_execution_time_ns" : 41500
 }, {
   "graph_id" : 12,
   "input_stats" : {
     "vertices" : 20,
-    "edges" : 120,
+    "edges" : 115,
     "density" : "dense",
     "variant" : "multiple_sccs",
-    "source" : 8,
+    "source" : 2,
     "weight_model" : "node"
   },
   "kosaraju_scc" : {
-    "num_sccs" : 4,
-    "sccs" : [ [ 0, 1, 2, 3, 5, 4, 6, 7, 8, 10, 9, 12, 11, 13 ], [ 14, 15 ], [ 17, 16 ], [ 18, 19 ] ],
-    "operations_count" : 280,
-    "execution_time_ns" : 33600
+    "num_sccs" : 3,
+    "sccs" : [ [ 0, 1, 3, 2, 4, 5, 6, 8, 7, 9, 10, 12, 11, 13 ], [ 15, 14, 17, 16 ], [ 19, 18 ] ],
+    "operations_count" : 270,
+    "execution_time_ns" : 31700
   },
   "condensation_graph" : {
-    "vertices" : 4,
-    "edges" : 3
+    "vertices" : 3,
+    "edges" : 2
   },
   "topological_sort" : {
-    "topological_order" : [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 16, 18, 19, 15 ],
-    "operations_count" : 140,
-    "execution_time_ns" : 13700
+    "topological_order" : [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 19, 18, 14 ],
+    "operations_count" : 135,
+    "execution_time_ns" : 19600
   },
   "shortest_path" : {
-    "source" : 8,
+    "source" : 2,
     "destination" : "all_reachable",
     "paths" : { },
     "operations_count" : 0,
-    "execution_time_ns" : 100
+    "execution_time_ns" : 200
   },
   "longest_path" : {
     "critical_path_length" : 0,
@@ -119,6 +119,6 @@
     "operations_count" : 0,
     "execution_time_ns" : 100
   },
-  "total_operations_count" : 420,
-  "total_execution_time_ns" : 47500
+  "total_operations_count" : 405,
+  "total_execution_time_ns" : 51600
 } ]
