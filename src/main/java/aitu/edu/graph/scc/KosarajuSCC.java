@@ -7,13 +7,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Implements Kosaraju's algorithm to find strongly connected components (SCCs) in a directed graph.
+ */
 public class KosarajuSCC {
 
+    /**
+     * Computes SCCs from a list of edges and number of nodes.
+     *
+     * @param n     the number of nodes
+     * @param edges the list of edges as int[2] arrays
+     * @return the SCCResult containing component assignments and lists
+     */
     public static SCCResult computeSCC(int n, List<int[]> edges) {
         return computeSCC(n, edges, null);
     }
 
+    /**
+     * Computes SCCs from a list of edges and number of nodes, with optional metrics.
+     *
+     * @param n       the number of nodes
+     * @param edges   the list of edges as int[2] arrays
+     * @param metrics optional metrics collector
+     * @return the SCCResult containing component assignments and lists
+     */
     public static SCCResult computeSCC(int n, List<int[]> edges, Metrics metrics) {
+        // Build adjacency list and reverse adjacency list
         List<List<Integer>> adj = new ArrayList<>(n);
         List<List<Integer>> rev = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
@@ -28,12 +47,14 @@ public class KosarajuSCC {
             rev.get(v).add(u);
         }
 
+        // First DFS to get finishing order
         boolean[] visited = new boolean[n];
         List<Integer> order = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             if (!visited[i]) dfs1(i, adj, visited, order, metrics);
         }
 
+        // Second DFS on reverse graph in reverse finishing order
         int[] compIds = new int[n];
         Arrays.fill(compIds, -1);
         List<List<Integer>> components = new ArrayList<>();
@@ -52,14 +73,27 @@ public class KosarajuSCC {
     }
 
 
+    /**
+     * Computes SCCs from a Graph object.
+     *
+     * @param g the graph
+     * @return the SCCResult containing component assignments and lists
+     */
     public static SCCResult computeSCC(Graph g) {
         return computeSCC(g, null);
     }
 
+    /**
+     * Computes SCCs from a Graph object, with optional metrics.
+     *
+     * @param g       the graph
+     * @param metrics optional metrics collector
+     * @return the SCCResult containing component assignments and lists
+     */
     public static SCCResult computeSCC(Graph g, Metrics metrics) {
         int n = g.nodeCount();
         List<List<Integer>> adj = g.adjacency();
-        // build reverse
+        // Build reverse adjacency list
         List<List<Integer>> rev = new ArrayList<>(n);
         for (int i = 0; i < n; i++) rev.add(new ArrayList<>());
         for (int u = 0; u < n; u++) {
@@ -68,12 +102,14 @@ public class KosarajuSCC {
             }
         }
 
+        // First DFS to get finishing order
         boolean[] visited = new boolean[n];
         List<Integer> order = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             if (!visited[i]) dfs1(i, adj, visited, order, metrics);
         }
 
+        // Second DFS on reverse graph in reverse finishing order
         int[] compIds = new int[n];
         Arrays.fill(compIds, -1);
         List<List<Integer>> components = new ArrayList<>();
@@ -91,6 +127,15 @@ public class KosarajuSCC {
         return new SCCResult(compIds, components);
     }
 
+    /**
+     * First DFS pass to compute finishing times.
+     *
+     * @param v       current node
+     * @param adj     adjacency list
+     * @param visited visited array
+     * @param order   list to store finishing order
+     * @param metrics optional metrics
+     */
     private static void dfs1(int v, List<List<Integer>> adj, boolean[] visited, List<Integer> order, Metrics metrics) {
         if (metrics != null) metrics.incDfsVisit();
         visited[v] = true;
@@ -101,6 +146,16 @@ public class KosarajuSCC {
         order.add(v);
     }
 
+    /**
+     * Second DFS pass on reverse graph to assign components.
+     *
+     * @param v       current node
+     * @param rev     reverse adjacency list
+     * @param compIds component ID array
+     * @param cid     current component ID
+     * @param comp    list to store component nodes
+     * @param metrics optional metrics
+     */
     private static void dfs2(int v, List<List<Integer>> rev, int[] compIds, int cid, List<Integer> comp, Metrics metrics) {
         if (metrics != null) metrics.incDfsVisit();
         compIds[v] = cid;

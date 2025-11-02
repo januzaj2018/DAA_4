@@ -1,12 +1,18 @@
 package aitu.edu.graph.util;
 
 
+/**
+ * Implementation of Metrics that tracks DFS visits, edges, relaxations, and elapsed time.
+ */
 public class TimerMetrics implements Metrics {
     private long dfsVisits = 0;
     private long dfsEdges = 0;
     private long relaxations = 0;
     private final long startNs;
 
+    /**
+     * Constructs a TimerMetrics instance, starting the timer.
+     */
     public TimerMetrics() {
         this.startNs = System.nanoTime();
     }

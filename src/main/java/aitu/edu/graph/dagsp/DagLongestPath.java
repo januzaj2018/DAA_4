@@ -6,8 +6,19 @@ import aitu.edu.graph.topo.DFSTopologicalSort;
 
 import java.util.*;
 
+/**
+ * Computes longest paths in a directed acyclic graph (DAG) using topological sorting and dynamic programming.
+ */
 public class DagLongestPath {
 
+    /**
+     * Computes the longest paths from a source node in a DAG.
+     *
+     * @param g      the graph to process
+     * @param src    the source node
+     * @param metrics optional metrics collector for performance tracking
+     * @return a PathResult containing distances and predecessors for path reconstruction
+     */
     public static PathResult longestPath(Graph g, int src, Metrics metrics) {
         if (g == null) throw new IllegalArgumentException("graph is null");
         int n = g.nodeCount();
@@ -17,10 +28,13 @@ public class DagLongestPath {
 
         if (src < 0 || src >= n) return new PathResult(src, dist, pred);
 
+        // Initialize source distance with its duration
         long srcDur = g.durationOf(src).orElse(0L);
         dist[src] = srcDur;
 
+        // Get topological order
         List<Integer> topo = DFSTopologicalSort.topologicalOrder(g.adjacency(), metrics);
+        // Relax edges in topological order to compute longest paths
         for (int u : topo) {
             if (dist[u] == PathResult.NEG_INF) continue; // unreachable
             for (int v : g.neighbors(u)) {

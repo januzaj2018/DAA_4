@@ -23,8 +23,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Generates reports for graph processing tasks, including SCC, topological sort, shortest and longest paths.
+ */
 public class TasksReportGenerator {
 
+    /**
+     * Generates a report from the input JSON file and writes the results to the output JSON file.
+     *
+     * @param inputPath  the path to the input JSON file containing graph data
+     * @param outputPath the path to the output JSON file where the report will be written
+     * @throws IOException if there is an issue reading the input file or writing the output file
+     */
     public static void generateReport(String inputPath, String outputPath) throws IOException {
         // Warm up the JVM with a dummy computation
         warmupJVM();
@@ -62,6 +72,9 @@ public class TasksReportGenerator {
         System.out.println("[report] written output to " + outputPath);
     }
 
+    /**
+     * Warms up the JVM by performing dummy computations on a small graph.
+     */
     private static void warmupJVM() {
         System.out.println("[report] warming up JVM...");
         // Create a small dummy graph
@@ -84,6 +97,13 @@ public class TasksReportGenerator {
         System.out.println("[report] JVM warmup complete.");
     }
 
+    /**
+     * Processes a single graph node and returns the report object.
+     *
+     * @param gnode the JSON node representing the graph
+     * @param om    the ObjectMapper for creating JSON nodes
+     * @return the ObjectNode containing the processed report data
+     */
     private static ObjectNode processGraph(JsonNode gnode, ObjectMapper om) {
         ObjectNode out = om.createObjectNode();
 

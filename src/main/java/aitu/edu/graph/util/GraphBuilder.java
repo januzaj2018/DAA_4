@@ -8,13 +8,26 @@ import java.io.IOException;
 import java.util.*;
 
 
+/**
+ * Builder for creating Graph instances from various input formats like JSON or files.
+ */
 public class GraphBuilder {
     private int n = -1;
     private final List<List<Integer>> adj = new ArrayList<>();
     private final Map<Integer, Long> durations = new HashMap<>();
 
+    /**
+     * Constructs a new GraphBuilder.
+     */
     public GraphBuilder() {}
 
+    /**
+     * Builds a GraphBuilder from a JSON file.
+     *
+     * @param path the file path
+     * @return the GraphBuilder
+     * @throws IOException if file reading fails
+     */
     public static GraphBuilder fromFile(String path) throws IOException {
         ObjectMapper om = new ObjectMapper();
         JsonNode root = om.readTree(new File(path));
@@ -23,7 +36,7 @@ public class GraphBuilder {
         String weightModel = null;
         if (root.has("weight_model")) weightModel = root.get("weight_model").asText(null);
 
-        // nodes array
+        // Parse nodes array
         if (root.has("nodes") && root.get("nodes").isArray()) {
             List<Integer> nodes = new ArrayList<>();
             for (JsonNode n : root.get("nodes")) nodes.add(n.asInt());
@@ -31,7 +44,7 @@ public class GraphBuilder {
             gb.ensureN(max + 1);
         }
 
-        // If explicit durations provided, use them
+        // Parse explicit durations
         if (root.has("durations") && root.get("durations").isObject()) {
             Iterator<String> it = root.get("durations").fieldNames();
             while (it.hasNext()) {
@@ -46,7 +59,7 @@ public class GraphBuilder {
             }
         }
 
-        // edges can be arrays ([u,v]) or objects ({"u":..,"v":..,"w":..})
+        // Parse edges
         Map<Integer, Long> inferredNodeDur = new HashMap<>(); // temp store when inferring durations from edge weights
         if (root.has("edges") && root.get("edges").isArray()) {
             for (JsonNode e : root.get("edges")) {
@@ -89,6 +102,12 @@ public class GraphBuilder {
         return gb;
     }
 
+    /**
+     * Builds a GraphBuilder from a JsonNode.
+     *
+     * @param root the JSON root node
+     * @return the GraphBuilder
+     */
     public static GraphBuilder fromJson(JsonNode root) {
         GraphBuilder gb = new GraphBuilder();
 
@@ -161,6 +180,12 @@ public class GraphBuilder {
         return gb;
     }
 
+    /**
+     * Ensures the graph has at least n nodes.
+     *
+     * @param n the minimum number of nodes
+     * @return this builder
+     */
     public GraphBuilder ensureN(int n) {
         if (this.n >= n) return this;
         for (int i = this.n == -1 ? 0 : this.n; i < n; i++) adj.add(new ArrayList<>());
@@ -168,6 +193,13 @@ public class GraphBuilder {
         return this;
     }
 
+    /**
+     * Adds an edge from u to v.
+     *
+     * @param u the source node
+     * @param v the target node
+     * @return this builder
+     */
     public GraphBuilder addEdge(int u, int v) {
         int max = Math.max(u, v);
         if (n <= max) ensureN(max + 1);
@@ -175,12 +207,24 @@ public class GraphBuilder {
         return this;
     }
 
+    /**
+     * Sets the duration for a node.
+     *
+     * @param node     the node
+     * @param duration the duration
+     * @return this builder
+     */
     public GraphBuilder setDuration(int node, long duration) {
         if (n <= node) ensureN(node + 1);
         durations.put(node, duration);
         return this;
     }
 
+    /**
+     * Builds the Graph.
+     *
+     * @return the constructed Graph
+     */
     public Graph build() {
         int finalN = Math.max(0, n == -1 ? 0 : n);
         return new Graph(finalN, adj, durations);

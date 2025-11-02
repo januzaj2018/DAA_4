@@ -16,8 +16,17 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Generates CSV files from report JSON files, aggregating data for SCC, topological sort, shortest path, longest path, and summary.
+ */
 public class CsvGenerator {
 
+    /**
+     * Main method to generate CSV files from report JSON files in the data directory.
+     *
+     * @param args command line arguments (not used)
+     * @throws IOException if there is an issue reading files or writing CSVs
+     */
     public static void main(String[] args) throws IOException {
         String dataDir = "data/";
         List<String> reportFiles = getReportJsonFiles(dataDir);

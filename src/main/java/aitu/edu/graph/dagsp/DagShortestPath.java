@@ -6,8 +6,19 @@ import aitu.edu.graph.topo.DFSTopologicalSort;
 
 import java.util.*;
 
+/**
+ * Computes shortest paths in a directed acyclic graph (DAG) using topological sorting and dynamic programming.
+ */
 public class DagShortestPath {
 
+    /**
+     * Computes the shortest paths from a source node in a DAG.
+     *
+     * @param g      the graph to process
+     * @param src    the source node
+     * @param metrics optional metrics collector for performance tracking
+     * @return a PathResult containing distances and predecessors for path reconstruction
+     */
     public static PathResult shortestPath(Graph g, int src, Metrics metrics) {
         if (g == null) throw new IllegalArgumentException("graph is null");
         int n = g.nodeCount();
@@ -17,12 +28,13 @@ public class DagShortestPath {
 
         if (src < 0 || src >= n) return new PathResult(src, dist, pred);
 
-        // initialize source distance as its own duration (or 0 if absent)
+        // Initialize source distance with its duration
         long srcDur = g.durationOf(src).orElse(0L);
         dist[src] = srcDur;
 
+        // Get topological order
         List<Integer> topo = DFSTopologicalSort.topologicalOrder(g.adjacency(), metrics);
-        // relax edges in topological order
+        // Relax edges in topological order to compute shortest paths
         for (int u : topo) {
             if (dist[u] == PathResult.INF) continue; // unreachable
             List<Integer> nbrs = g.neighbors(u);
